@@ -1,0 +1,3 @@
+# Media-player-kotlin-for-everyone
+
+a kotlin implementation of a mediaplayer to practise with Kotlin and all the new technos likes Dagger2, Retrofit, LiveData, ViewModel....
