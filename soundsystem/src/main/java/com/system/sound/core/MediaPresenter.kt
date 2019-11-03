@@ -5,9 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.database.Cursor
+import android.os.Build
 import android.os.IBinder
 import android.provider.MediaStore
 import android.util.Log.d
+import androidx.annotation.RequiresApi
 import com.system.sound.base.BasePresenter
 import com.system.sound.informations.Audio
 import com.system.sound.service.MediaPlayerService
@@ -72,6 +74,7 @@ class MediaPresenter @Inject constructor(private val mContext: Context) :
         }
     }
 
+    //@RequiresApi(Build.VERSION_CODES.Q)
     private fun loadAudioFiles(): MutableList<Audio> {
         d(">>>>>>>>>  ", "loading songs ")
         val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI

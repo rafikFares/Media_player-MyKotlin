@@ -1,9 +1,7 @@
 package com.system.sound.injection.annotation
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
 import javax.inject.Qualifier
 
 @Qualifier
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class ApplicationContext
