@@ -15,11 +15,11 @@ import javax.inject.Inject
 
 class NotificationHelper @Inject constructor(private val mContext: Context) {
 
-    private val CHANNEL_ID = "com.continental.sound.service.662016"
-    private val CHANNEL_NAME = "com.continental.sound.service"
+    private val CHANNEL_ID = "com.my.sound.service.662016"
+    private val CHANNEL_NAME = "com.my.sound.service"
     private val NOTIFICATION_ID = 662016
 
-    private var notificationBuilder : NotificationCompat.Builder
+    private var notificationBuilder: NotificationCompat.Builder
     private var notification: Notification
 
     init {
@@ -44,18 +44,36 @@ class NotificationHelper @Inject constructor(private val mContext: Context) {
 
     }
 
-    fun showNotification(@Nullable song : Audio? = null, title: String) {
-        notificationBuilder.setContentText(song?.title ?: title)
-        with(NotificationManagerCompat.from(mContext)) {
-            notify(NOTIFICATION_ID, notification)
+    fun showNotification(@Nullable song: Audio? = null, title: String, @Nullable notificationId: Int? = null) =
+        when (notificationId) {
+            null -> {
+                notificationBuilder.setContentText(song?.title ?: title)
+                with(NotificationManagerCompat.from(mContext)) {
+                    notify(NOTIFICATION_ID, notification)
+                }
+            }
+            else -> {
+                notificationBuilder.setContentText(title)
+                with(NotificationManagerCompat.from(mContext)) {
+                    notify(notificationId, notification)
+                }
+            }
         }
-    }
 
-    fun hideNotification() {
-        with(NotificationManagerCompat.from(mContext)) {
-            cancel(NOTIFICATION_ID)
+
+    fun hideNotification(@Nullable notificationId: Int? = null) =
+        when (notificationId) {
+            null -> {
+                with(NotificationManagerCompat.from(mContext)) {
+                    cancel(NOTIFICATION_ID)
+                }
+            }
+            else -> {
+                with(NotificationManagerCompat.from(mContext)) {
+                    cancel(notificationId)
+                }
+            }
         }
-    }
 
 
 }

@@ -10,7 +10,7 @@ import android.os.Build
 object MyMediaPlayer : MediaPlayer() {
 
     private var pausedAt: Int = 0
-    private const val LOCK_TAG: String = "ContiPlayerLock"
+    private const val LOCK_TAG: String = "MyPlayerLock"
     private var wifiLock: WifiManager.WifiLock? = null
 
     override fun pause() {

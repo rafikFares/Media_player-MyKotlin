@@ -85,9 +85,9 @@ class MediaPresenter @Inject constructor(private val mContext: Context) :
         val tmp: MutableList<Audio> = mutableListOf()
 
         if (cursor != null) {
-            (1..cursor.count).mapNotNull {
-                cursor.moveToNext()
-                with(tmp) {
+            with(tmp) {
+                (1..cursor.count).mapNotNull {
+                    cursor.moveToNext()
                     add(
                         Audio(
                             cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.RELATIVE_PATH)),

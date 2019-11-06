@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,7 +30,7 @@ class TitleFragment : Fragment(), RecyclerViewAdapter.ItemClickListener , MediaV
     private lateinit var mRecyclerView: RecyclerView
     private var myAudioList: MutableList<Audio> = mutableListOf()
 
-    private lateinit var mediaViewModel: MediaViewModel
+    private val mediaViewModel: MediaViewModel by viewModels()
     private lateinit var mAdapter: RecyclerViewAdapter
 
     @Inject
@@ -54,10 +55,7 @@ class TitleFragment : Fragment(), RecyclerViewAdapter.ItemClickListener , MediaV
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mediaViewModel =
-            ViewModelProviders.of(activity!!).get(MediaViewModel::class.java)
-
-        mediaViewModel.audioListSize.observe(this, Observer {
+        mediaViewModel.audioListSize.observe(viewLifecycleOwner, Observer {
             myAudioList.addNotExistingItems(mediaViewModel.audioList.value!!)
             d(">>>>>>>", "audioList changed : $it")
             mAdapter.notifyDataSetChanged()
