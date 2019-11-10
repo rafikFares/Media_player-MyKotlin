@@ -1,7 +1,6 @@
 package com.automotive.mediaplayer.ui.titles
 
 import android.os.Bundle
-import android.util.Log
 import android.util.Log.d
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.automotive.mediaplayer.MediaViewModel
@@ -18,14 +16,15 @@ import com.automotive.mediaplayer.addNotExistingItems
 import com.automotive.mediaplayer.injection.DaggerActivityComponent
 import com.system.sound.informations.Audio
 import com.automotive.mediaplayer.ui.adapters.RecyclerViewAdapter
+import com.system.sound.core.MediaContract
 import com.system.sound.core.MediaPresenter
-import com.system.sound.core.MediaView
 import com.system.sound.injection.AppComponent
 import com.system.sound.injection.MediaServiceApplication
 import javax.inject.Inject
 
 
-class TitleFragment : Fragment(), RecyclerViewAdapter.ItemClickListener , MediaView {
+class TitleFragment : Fragment(), RecyclerViewAdapter.ItemClickListener , MediaContract.View {
+
 
     private lateinit var mRecyclerView: RecyclerView
     private var myAudioList: MutableList<Audio> = mutableListOf()
@@ -61,6 +60,8 @@ class TitleFragment : Fragment(), RecyclerViewAdapter.ItemClickListener , MediaV
             mAdapter.notifyDataSetChanged()
         })
 
+        mMediaPresenter.onViewCreated()
+
         d(">>>>>>>", "onViewCreated: ${myAudioList.size}")
     }
 
@@ -84,13 +85,22 @@ class TitleFragment : Fragment(), RecyclerViewAdapter.ItemClickListener , MediaV
             .appComponent(appComponent)
             .build()
             .inject(this)
+
+        mMediaPresenter.setView(this)
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (mediaViewModel.audioList.value.isNullOrEmpty()) {
-            mMediaPresenter.attachView(this)
-        }
+    override fun onDetach() {
+        mMediaPresenter.onDetachView()
+        super.onDetach()
+    }
+
+    override fun onDestroy() {
+        mMediaPresenter.onDestroy()
+        super.onDestroy()
+    }
+
+    override fun setPresenter(presenter: MediaContract.Presenter) {
+        // No need to use it, because i already inject the presenter using dagger
     }
 }
 

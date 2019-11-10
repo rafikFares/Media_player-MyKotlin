@@ -1,10 +1,12 @@
 package com.automotive.mediaplayer
 
 import android.os.Bundle
+import android.util.Log.d
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -16,6 +18,8 @@ import javax.inject.Inject
 
 
 class MainActivity : AppCompatActivity() {
+
+    private val TAG = MainActivity::class.java.simpleName
 
     private val mediaViewModel: MediaViewModel by viewModels()
     @Inject
@@ -47,6 +51,11 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launchWhenResumed {
             notificationCounter("Resumed ")
+        }
+
+        lifecycleScope.launchWhenStarted {
+            for (i in mediaViewModel.receiveChannel)
+            d(TAG, "launchWhenStarted ->> $i")
         }
 
     }

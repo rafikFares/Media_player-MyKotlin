@@ -4,37 +4,44 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.database.Cursor
-import android.os.Build
 import android.os.IBinder
-import android.provider.MediaStore
 import android.util.Log.d
-import androidx.annotation.RequiresApi
-import com.system.sound.base.BasePresenter
 import com.system.sound.informations.Audio
 import com.system.sound.service.MediaPlayerService
-import org.jetbrains.anko.doAsync
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class MediaPresenter @Inject constructor(private val mContext: Context) :
-    BasePresenter<MediaView>() {
+class MediaPresenter @Inject constructor(private val mContext: Context) : MediaContract.Presenter {
 
     private val TAG = MediaPresenter::class.java.simpleName
     private var serviceBound = false
     private lateinit var player: MediaPlayerService
+    private lateinit var request: Job
+    private var view: MediaContract.View? = null
 
-    override fun attachView(view: MediaView) {
-        super.attachView(view)
-        doAsync {
-            view.showData(
-                loadAudioFiles()
+    override fun setView(view: MediaContract.View) {
+        this.view = view
+    }
+
+    override fun onViewCreated() {
+        request = GlobalScope.launch {
+            //could use doAsync {}
+            view?.showData(
+                MediaModel.loadAudioFiles(mContext)
             )
         }
     }
 
+    override fun onDetachView() {
+        if (request.isActive)
+            request.cancel()
 
-    override fun detachView() {
-        super.detachView()
+        this.view = null
+    }
+
+    override fun onDestroy() {
         if (serviceBound) {
             mContext.unbindService(serviceConnection)
             player.stopSelf()
@@ -74,33 +81,5 @@ class MediaPresenter @Inject constructor(private val mContext: Context) :
         }
     }
 
-    //@RequiresApi(Build.VERSION_CODES.Q)
-    private fun loadAudioFiles(): MutableList<Audio> {
-        d(">>>>>>>>>  ", "loading songs ")
-        val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-        val selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0"
-        val sortOrder = MediaStore.Audio.Media.TITLE + " ASC"
-        val cursor: Cursor? = mContext.contentResolver.query(uri, null, selection, null, sortOrder)
 
-        val tmp: MutableList<Audio> = mutableListOf()
-
-        if (cursor != null) {
-            with(tmp) {
-                (1..cursor.count).mapNotNull {
-                    cursor.moveToNext()
-                    add(
-                        Audio(
-                            cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.RELATIVE_PATH)),
-                            cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)),
-                            cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
-                            cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST))
-                        )
-                    )
-                }
-            }
-        }
-        cursor?.close()
-
-        return tmp
-    }
 }
