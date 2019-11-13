@@ -2,9 +2,7 @@ package com.system.sound.injection
 
 import android.app.Application
 import android.util.Log.d
-import com.system.sound.injection.module.AppModule
-import com.system.sound.injection.module.MediaPresenterModule
-import com.system.sound.injection.module.NotificationHelperModule
+import com.system.sound.injection.module.*
 
 class MediaServiceApplication : Application() {
 
@@ -16,13 +14,13 @@ class MediaServiceApplication : Application() {
         appComponent = initDagger(this)
     }
 
-    private fun initDagger(app : Application) = DaggerAppComponent.builder()
+    private fun initDagger(app: Application) = DaggerAppComponent.builder()
         .appModule(AppModule(app))
         .mediaPresenterModule(MediaPresenterModule())
         .notificationHelperModule(NotificationHelperModule())
+        .serviceRepositoryModule(ServiceRepositoryModule())
+        .filesRepositoryModule(FilesRepositoryModule())
         .build()
-
-
 
 
 }

@@ -8,6 +8,7 @@ interface MediaContract {
 
     interface Presenter : BasePresenter<View> {
         fun onViewCreated()
+        fun playAudio(media: Audio)
     }
 
     interface View : BaseView<Presenter> {
